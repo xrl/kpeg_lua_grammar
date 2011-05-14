@@ -1,8 +1,13 @@
-%% name = Lupin::Parser
-
+%% name = LupinParser
+%% {
+  require 'ast'
+  include Lupin::AST
+}
 chunk = (stat ";"?)* (laststat ";"?)?
 
 block = chunk
+
+%% varlist = ast VarList
 
 stat = varlist "=" explist |
       functioncall |
@@ -31,7 +36,7 @@ exp = "nil" | "false" | "true" | number | string | "..." | function | prefixexp 
 
 prefixexp = var | functioncall | "(" exp ")"
 
-functioncall = prefixexps args | prefixexp ":" name args
+functioncall = prefixexp args | prefixexp ":" name args
 
 args = "(" (explist)? ")" | tableconstructor | string
 
@@ -48,5 +53,7 @@ fieldsep = "," | ";"
 binop = "+" | "-" | "*" | "/" | "^" | "%" | ".." | "<" | "<=" | ">" | ">=" | "==" | "~=" | "and" | "or"
 
 unop = "-" | "not" | "#" 
+
+name = /[A-Za-z_] [A-Za-z_0-9]*/
 
 root = chunk
