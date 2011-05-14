@@ -1,0 +1,52 @@
+%% name = Lupin::Parser
+
+chunk = (stat ";"?)* (laststat ";"?)?
+
+block = chunk
+
+stat = varlist "=" explist |
+      functioncall |
+      "do" block "end" |
+      "while" exp "do" block "end" |
+      "repeat" block "until" exp |
+      "if" exp "then" block ("elseif" exp "then" block)* ("else" block)? "end" |
+      "for" name "=" exp "," exp ("," exp)? "do" block "end" |
+      "for" namelist "in" explist "do" block "end" |
+      "function" funcname funcbody |
+      "local" "function" name funcbody |
+      "local" namelist ("=" explist)?
+
+laststat = "return" (explist)* | "break"
+
+funcname = name ("." name)* (":" name)?
+
+varlist = var ("," var)
+var = name | prefixexp "[" exp "]" | prefixexp "." name
+
+namelist = name ("," name)*
+
+explist = (exp ",")* exp
+exp = "nil" | "false" | "true" | number | string | "..." | function | prefixexp |
+     tableconstructor | exp binop exp | unop exp
+
+prefixexp = var | functioncall | "(" exp ")"
+
+functioncall = prefixexps args | prefixexp ":" name args
+
+args = "(" (explist)? ")" | tableconstructor | string
+
+function = function funcbody
+funcbody = "(" (parlist)? ")" block "end"
+
+parlist = namelist ("," "...") | "..."
+
+tableconstructor = "{" fieldlist "}"
+fieldlist = field (fieldsep field)* (fieldsep)?
+field = "[" exp "]" "=" exp | name "=" exp | exp
+fieldsep = "," | ";"
+
+binop = "+" | "-" | "*" | "/" | "^" | "%" | ".." | "<" | "<=" | ">" | ">=" | "==" | "~=" | "and" | "or"
+
+unop = "-" | "not" | "#" 
+
+root = chunk
