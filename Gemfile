@@ -2,6 +2,7 @@ source :gemcutter
 
 # gemspec
 
+gem "rake"
 gem "rspec"
 gem "bundler"
 

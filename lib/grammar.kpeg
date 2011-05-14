@@ -1,18 +1,19 @@
 %% name = LupinParser
 %% {
+  require 'rubinius/debugger'
   require 'ast'
   attr_accessor :ast
 }
-%% ast-location = ::Lupin::AST
-%% assignment = ast Assignment(text)
-%% varlist = ast VarList(text)
-%% explist = ast ExpList(text)
+# %% ast-location = ::Lupin::AST
+# %% assignment = ast Assignment(text)
+# %% varlist = ast VarList(text)
+# %% explist = ast ExpList(text)
 
 chunk = (stat ";"?)* (laststat ";"?)?
 
 block = chunk
 
-stat = varlist:vl "=" explist ~varlist(vl) |
+stat = varlist "=" explist |
       functioncall |
       "do" block "end" |
       "while" exp "do" block "end" |
@@ -43,7 +44,7 @@ functioncall = prefixexp args | prefixexp ":" name args
 
 args = "(" (explist)? ")" | tableconstructor | string
 
-function = function funcbody
+function = "function" funcbody
 funcbody = "(" (parlist)? ")" block "end"
 
 parlist = namelist ("," "...") | "..."
@@ -57,6 +58,10 @@ binop = "+" | "-" | "*" | "/" | "^" | "%" | ".." | "<" | "<=" | ">" | ">=" | "==
 
 unop = "-" | "not" | "#" 
 
-name = /[A-Za-z_] [A-Za-z_0-9]*/
+name_regex = </[A-Za-z_][A-Za-z_0-9]*/>
+name = name_regex:n { Rubinius::Debugger.start; text }
+string = ("\"" /(\\.|[^\"\n])*/m "\"")
+    | ('\'' /(\\.|[^\'\n])*/m '\'')
+    | /\[(=*)\[.*?\]\1\]/m
 
 root = chunk:e {@ast = e}
