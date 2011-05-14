@@ -3,8 +3,11 @@ module Lupin
     class Node
       attr_accessor = :data
       def initialize(*args)
+        raise "ASDSF"
         @data = args
       end
+    end
+    class Assignment < Node
     end
     class VarList < Node
     end

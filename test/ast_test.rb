@@ -8,9 +8,9 @@ require 'grammar.kpeg'
 
 class AstTest < Test::Unit::TestCase
   def test_ast_generation
-    expression = "result = 1+1"
+    expression = "result=1+1"
     parser = LupinParser.new(expression)
     parser.parse
-    raise parser.inspect
+    raise parser.ast.inspect
   end
 end

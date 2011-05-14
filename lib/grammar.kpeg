@@ -1,15 +1,18 @@
 %% name = LupinParser
 %% {
   require 'ast'
-  include Lupin::AST
+  attr_accessor :ast
 }
+%% ast-location = ::Lupin::AST
+%% assignment = ast Assignment(text)
+%% varlist = ast VarList(text)
+%% explist = ast ExpList(text)
+
 chunk = (stat ";"?)* (laststat ";"?)?
 
 block = chunk
 
-%% varlist = ast VarList
-
-stat = varlist "=" explist |
+stat = varlist:vl "=" explist ~varlist(vl) |
       functioncall |
       "do" block "end" |
       "while" exp "do" block "end" |
@@ -56,4 +59,4 @@ unop = "-" | "not" | "#"
 
 name = /[A-Za-z_] [A-Za-z_0-9]*/
 
-root = chunk
+root = chunk:e {@ast = e}
