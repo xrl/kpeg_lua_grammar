@@ -1,4 +1,4 @@
-%% name = LupinParser
+%% name = Lupin::Parser
 %% {
   require 'rubinius/debugger'
   require 'ast'
@@ -58,10 +58,9 @@ binop = "+" | "-" | "*" | "/" | "^" | "%" | ".." | "<" | "<=" | ">" | ">=" | "==
 
 unop = "-" | "not" | "#" 
 
-name_regex = </[A-Za-z_][A-Za-z_0-9]*/>
-name = name_regex:n { Rubinius::Debugger.start; text }
-string = ("\"" /(\\.|[^\"\n])*/m "\"")
+name = </[A-Za-z_]/ /[A-Za-z_0-9]/*> { text }
+string = < ("\"" /(\\.|[^\"\n])*/m "\"")
     | ('\'' /(\\.|[^\'\n])*/m '\'')
-    | /\[(=*)\[.*?\]\1\]/m
+    | /\[(=*)\[.*?\]\1\]/m > { text }
 
 root = chunk:e {@ast = e}
