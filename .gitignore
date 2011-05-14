@@ -3,3 +3,4 @@ Gemfile.lock
 gems/
 *.rbc
 .bundle/
+*.kpeg.rb
