@@ -7,12 +7,12 @@ require 'lupin'
 class AstTest < Test::Unit::TestCase
   def parses_to_result(input,rule)
     parser = Lupin::Parser.new(input)
-    assert(parser.parse)
+    assert(parser.parse(rule))
     assert_equal(parser.result,input)
   end
   def doesnt_parse_to_result(input,rule)
     parser = Lupin::Parser.new(input)
-    assert(!parser.parse)
+    assert(!parser.parse(rule))
     assert(parser.result == nil)
   end
   def test_names
