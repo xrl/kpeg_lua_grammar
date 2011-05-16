@@ -58,9 +58,25 @@ binop = "+" | "-" | "*" | "/" | "^" | "%" | ".." | "<" | "<=" | ">" | ">=" | "==
 
 unop = "-" | "not" | "#" 
 
-name = </[A-Za-z_]/ /[A-Za-z_0-9]/*> { text }
-string = < ("\"" /(\\.|[^\"\n])*/m "\"")
-    | ('\'' /(\\.|[^\'\n])*/m '\'')
-    | /\[(=*)\[.*?\]\1\]/m > { text }
+primitives = /\b/ ("nil" | "false" | "true") /\b/
 
+name = </[A-Za-z_][A-Za-z_0-9]*/> { text }
+
+string = sgl-string | dbl-string | long-string
+sgl-string = "\"" </(\\.|[^\"\n])*/m> "\"" {text}
+dbl-string = "'" </(\\.|[^\'\n])*/m> "'" {text}
+long-string = long-string-start:e
+              <(!long-string-end(e) .)*>
+              long-string-end(e)
+            {text}
+long-string-equals = <"="*> {text}
+long-string-start = "[" <long-string-equals> "[" {text}
+long-string-end(eqs) = "]" long-string-equals:e &{e.length == eqs.length} "]"
+
+- = whitespace | comment
+whitespace = /[ \n\t]+/
+comment = "--" ( !long-string-start /[^\n]+/ ("\n" | eof)
+               | long-string)
+
+eof = !.
 root = chunk:e {@ast = e}
