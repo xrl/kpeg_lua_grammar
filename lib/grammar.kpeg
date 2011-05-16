@@ -62,9 +62,17 @@ primitives = /\b/ ("nil" | "false" | "true") /\b/
 
 name = </[A-Za-z_][A-Za-z_0-9]*/> { text }
 
+# Numbers
+number = hex-literal | dec-literal
+hex-literal = "0x" /[A-Fa-f0-9]+/
+dec-literal = dec-literal-base dec-literal-exponent?
+dec-literal-base = /\d*\.\d+/ | /\d+\.?/
+dec-literal-exponent = ("E"|"e") /[+-]?\d+/
+
+# Strings
 string = sgl-string | dbl-string | long-string
-sgl-string = "\"" </(\\.|[^\"\n])*/m> "\"" {text}
-dbl-string = "'" </(\\.|[^\'\n])*/m> "'" {text}
+sgl-string = "'" </(\\.|[^\'\n])*/m> "'" {text}
+dbl-string = "\"" </(\\.|[^\"\n])*/m> "\"" {text}
 long-string = long-string-start:e
               <(!long-string-end(e) .)*>
               long-string-end(e)
@@ -73,10 +81,12 @@ long-string-equals = <"="*> {text}
 long-string-start = "[" <long-string-equals> "[" {text}
 long-string-end(eqs) = "]" long-string-equals:e &{e.length == eqs.length} "]"
 
+# Whitespace/comments
 - = whitespace | comment
 whitespace = /[ \n\t]+/
 comment = "--" ( !long-string-start /[^\n]+/ ("\n" | eof)
                | long-string)
 
-eof = !.
+# Top-level
 root = chunk:e {@ast = e}
+eof = !.
