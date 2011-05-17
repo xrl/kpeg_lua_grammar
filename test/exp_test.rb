@@ -1,7 +1,7 @@
 require "test/unit"
 require './test/helper_methods'
 
-class VarlistTest < Test::Unit::TestCase
+class ExpTest < Test::Unit::TestCase
   include TestHelperMethods
 
   def test_parse
