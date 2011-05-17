@@ -31,11 +31,11 @@ funcname = name ("." name)* (":" name)?
 name = </[A-Za-z_][A-Za-z_0-9]*/> { text }
 
 varlist = var (- "," - var)*
-var = name # | prefixexp "[" exp "]" | prefixexp "." name
+var = name | prefixexp "[" exp "]" | prefixexp "." name
 
 namelist = name ("," name)*
 
-explist = (exp ",")* exp
+explist = (exp - "," -)* - exp
 exp = "nil" | "false" | "true" | number | string | "..." | function | prefixexp |
      tableconstructor | exp binop exp | unop exp
 
@@ -43,7 +43,7 @@ prefixexp = var | functioncall | "(" exp ")"
 
 functioncall = prefixexp args | prefixexp ":" name args
 
-args = "(" (explist)? ")" | tableconstructor | string
+args = "(" - (explist)? - ")" | tableconstructor | string
 
 function = "function" funcbody
 funcbody = "(" (parlist)? ")" block "end"
@@ -82,7 +82,7 @@ long-string-end(eqs) = "]" long-string-equals:e &{e.length == eqs.length} "]"
 
 # Whitespace/comments
 - = whitespace | comment
-whitespace = /[ \n\t]+/
+whitespace = /[ \n\t]*/
 comment = "--" ( !long-string-start /[^\n]+/ ("\n" | eof)
                | long-string)
 
