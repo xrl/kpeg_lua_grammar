@@ -12,8 +12,7 @@ file "lib/grammar.kpeg.rb" => ["lib/grammar.kpeg"] do
 end
 
 task :clean do
-  Dir["lib/*.rbc", "lib/**/*.rbc"].each{|file| sh "rm -f #{file}"}
-  Dir["test/*.rbc", "test/**/*.rbc"].each{|file| sh "rm -f #{file}"}
+  Dir["**/*.rbc"].each{|f| sh "rm -rf #{f}"}
 end
 
 Rake::TestTask.new(:test => ["lib/grammar.kpeg.rb"]) do |t|
