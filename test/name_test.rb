@@ -17,9 +17,18 @@ class NameTest < Test::Unit::TestCase
   def test_bad_names
     assert_raise RuntimeError do
       parse "0", :name
+    end
+    assert_raise RuntimeError do
       parse "$", :name
+    end
+    assert_raise RuntimeError do
       parse "0badname", :name
+    end
+    assert_raise RuntimeError do
       parse "no spaces allowed", :name
+    end
+    assert_raise RuntimeError do
+      parse "   leading_spaces_bad", :name
     end
   end
 end
