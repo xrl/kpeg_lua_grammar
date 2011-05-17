@@ -18,6 +18,8 @@ class NameTest < Test::Unit::TestCase
     assert_raise RuntimeError do
       parse "0", :name
       parse "$", :name
+      parse "0badname", :name
+      parse "no spaces allowed", :name
     end
   end
 end

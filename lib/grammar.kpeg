@@ -29,8 +29,8 @@ laststat = "return" (explist)* | "break"
 
 funcname = name ("." name)* (":" name)?
 
-varlist = var ("," var)
-var = name | prefixexp "[" exp "]" | prefixexp "." name
+varlist = var # ("," var)*
+var = name # | prefixexp "[" exp "]" | prefixexp "." name
 
 namelist = name ("," name)*
 

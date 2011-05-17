@@ -11,10 +11,14 @@ class CommentsTest < Test::Unit::TestCase
       parse "-- foo\n", :comment
       parse "---foo\n", :comment
       parse "-- [[foo\n", :comment
-      
+
       parse "--[[foo]]", :comment
       parse "--[[foo\nbar]]", :comment
       parse "--[=[foo]=bar]=]", :comment
+      
+      parse "--[=[foo]=comment\n\n\n]=]", :comment
+      parse "--[=[foo]=\n\n\ncomment]=]", :comment
+      parse "--[=[foo]=\n\n\ncomment\n\n\n]=]", :comment
     end
   end
   
