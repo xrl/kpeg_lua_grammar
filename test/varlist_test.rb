@@ -4,10 +4,14 @@ require './test/helper_methods'
 class VarlistTest < Test::Unit::TestCase
   include TestHelperMethods
 
-  def test
+  def test_varlists
     assert_nothing_raised do
       parse "var1", :varlist
+    end
+    assert_nothing_raised do
       parse "var1,var2", :varlist
+    end
+    assert_nothing_raised do
       parse "var1, var2", :varlist
     end
   end
