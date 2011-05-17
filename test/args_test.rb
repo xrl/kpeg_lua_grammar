@@ -23,5 +23,8 @@ class ArgsTest < Test::Unit::TestCase
     assert_raise RuntimeError do
       parse "(nil,)", :args
     end
+    assert_raise RuntimeError do
+      parse "(,nil,)", :args
+    end
   end
 end
