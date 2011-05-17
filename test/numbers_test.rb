@@ -17,27 +17,23 @@ class NumbersTest < Test::Unit::TestCase
     assert_nothing_raised do
       parse "0x1234567890AbCdEf", :number
     end
+
+    assert_nothing_raised do
+      parse "9.", :number
+    end
+    
+    assert_nothing_raised do
+      parse ".42", :number
+    end
   end
   
   def test_bad_numbers
     assert_raise RuntimeError do
-      # Twisol had this as acceptable.
-      # http://www.lua.org/manual/5.1/manual.html#2.1
-      # Those example don't accept it -- and I'm used to ruby notation.
-      # Will accept code in the wild as a counter point :-D
-      parse "9.", :number
+      parse ".", :number
     end
     
     assert_raise RuntimeError do
       parse "9.+e1", :number
-    end
-    
-    assert_raise RuntimeError do
-      parse ".42", :number
-    end
-    
-    assert_raise RuntimeError do
-      parse ".", :number
     end
     
     assert_raise RuntimeError do

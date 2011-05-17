@@ -65,8 +65,8 @@ primitives = /\b/ ("nil" | "false" | "true") /\b/
 number = hex-literal | dec-literal
 hex-literal = "0x" /[A-Fa-f0-9]+/
 dec-literal = dec-literal-base dec-literal-exponent?
-dec-literal-base = /\d+(\.\d+)?/
-dec-literal-exponent = ("E"|"e") /[+-]?\d+/
+dec-literal-base = /\d*\.\d+/ | /\d+\.?/
+dec-literal-exponent = /[Ee][+-]?\d+/
 
 # Strings
 string = sgl-string | dbl-string | long-string
