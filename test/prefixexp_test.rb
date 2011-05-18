@@ -6,7 +6,13 @@ class PrefixexpTest < Test::Unit::TestCase
 
   def test_parse
     assert_nothing_raised do
-    #  parse "(1+1)", :prefixexp
+      parse "(nil)", :prefixexp
+    end
+    assert_nothing_raised do
+      parse "some_var", :prefixexp
+    end
+    assert_nothing_raised do
+      # parse "hey()", :prefixexp
     end
   end
 

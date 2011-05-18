@@ -36,14 +36,13 @@ var = name | prefixexp "[" exp "]" | prefixexp "." name
 namelist = name ("," name)*
 
 explist = (exp - "," -)* - exp
-exp = "nil" | "false" | "true" | number | string | "..." | function | prefixexp |
-     tableconstructor | exp binop exp | unop exp
+exp = prefixexp | function | tableconstructor | exp binop exp | unop exp | "nil" | "false" | "true" | number | string | "..."
 
-prefixexp = var | functioncall | "(" exp ")"
+prefixexp = "(" exp ")" | functioncall | var
 
 functioncall = prefixexp args | prefixexp ":" name args
 
-args = "(" - (explist)? - ")" | tableconstructor | string
+args = "()" | - "(" - (explist)? - ")" - | tableconstructor | string
 
 function = "function" funcbody
 funcbody = "(" (parlist)? ")" block "end"

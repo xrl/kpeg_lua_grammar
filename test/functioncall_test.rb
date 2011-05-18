@@ -15,7 +15,19 @@ class FunctioncallTest < Test::Unit::TestCase
       parse "set_bank_balance(nil)", :functioncall
     end
     assert_nothing_raised do
-    #  parse "evaluate_expression((1+1))", :functioncall
+      parse "evaluate_expression(100)", :functioncall
+    end
+    assert_nothing_raised do
+      parse "evaluate_expression(\"yessir\")", :functioncall
+    end
+    assert_nothing_raised do
+      parse "evaluate_expression(...)", :functioncall
+    end
+    assert_nothing_raised do
+      parse "evaluate_expression(somevar)", :functioncall
+    end
+    assert_nothing_raised do
+      # parse "evaluate_expression(somevar())", :functioncall
     end
   end
 
