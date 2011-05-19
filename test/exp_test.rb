@@ -21,8 +21,11 @@ class ExpTest < Test::Unit::TestCase
       parse %Q{"kitties"}, :exp
     end
     assert_nothing_raised do
-      Rubinius::Debugger.start
+      # Rubinius::Debugger.start
       parse "kitties()", :exp
+    end
+    assert_nothing_raised do
+      parse "(kitties())", :exp
     end
     # assert_nothing_raised do
     #   parse "1+1", :exp
