@@ -6,19 +6,19 @@ class CommentsTest < Test::Unit::TestCase
   
   def test_comments
     assert_nothing_raised do
-      parse :comment, "--foo\n", nil
-      parse :comment, "--foo", nil
-      parse :comment, "-- foo\n", nil
-      parse :comment, "---foo\n", nil
-      parse :comment, "-- [[foo\n", nil
+      parse :comment, "--foo\n", [:comment, "foo"]
+      parse :comment, "--foo", [:comment, "foo"]
+      parse :comment, "-- foo\n", [:comment, " foo"]
+      parse :comment, "---foo\n", [:comment, "-foo"]
+      parse :comment, "-- [[foo\n", [:comment, " [[foo"]
 
-      parse :comment, "--[[foo]]", [:string, "foo"]
-      parse :comment, "--[[foo\nbar]]", [:string, "foo\nbar"]
-      parse :comment, "--[=[foo]=bar]=]", [:string, "bar"]
+      parse :comment, "--[[foo]]", [:comment, "foo"]
+      parse :comment, "--[[foo\nbar]]", [:comment, "foo\nbar"]
+      parse :comment, "--[=[foo]=bar]=]", [:comment, "foo]=bar"]
       
-      parse :comment, "--[=[foo]=comment\n\n\n]=]", nil
-      parse :comment, "--[=[foo]=\n\n\ncomment]=]", nil
-      parse :comment, "--[=[foo]=\n\n\ncomment\n\n\n]=]", nil
+      parse :comment, "--[=[foo]=comment\n\n\n]=]", [:comment,"foo]=comment\n\n\n"]
+      parse :comment, "--[=[foo]=\n\n\ncomment]=]", [:comment,"foo]=\n\n\ncomment"]
+      parse :comment, "--[=[foo]=\n\n\ncomment\n\n\n]=]", [:comment,"foo]=\n\n\ncomment\n\n\n"]
     end
   end
   
