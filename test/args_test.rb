@@ -6,25 +6,25 @@ class ArgsTest < Test::Unit::TestCase
 
   def test_parse
     assert_nothing_raised do
-      parse "()", :args
+      parse :args, "()", [:args, []]
     end
     assert_nothing_raised do
-      parse "(nil)", :args
+      parse :args, "((nil))", [:args, [:explist, [:lit, nil]]]
     end
     assert_nothing_raised do
-      parse "(nil,nil)", :args
+      parse :args, "(nil, false , true )", [:args, [:explist, [[:lit,nil],[:lit,false],[:lit,true]]]]
     end
     assert_nothing_raised do
-      parse "(nil, nil )", :args
+      parse :args, "(nil,(false))", [:args, [:explist, [[:lit, nil],[:lit, false]]]]
     end
   end
 
   def test_bad
-    assert_raise RuntimeError do
-      parse "(nil,)", :args
+    assert_raise Test::Unit::AssertionFailedError do
+      parse :args, "(nil,)", :whatever
     end
-    assert_raise RuntimeError do
-      parse "(,nil,)", :args
+    assert_raise Test::Unit::AssertionFailedError do
+      parse :args, "(,nil,)", :whatever
     end
   end
 end

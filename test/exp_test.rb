@@ -6,29 +6,40 @@ class ExpTest < Test::Unit::TestCase
 
   def test_parse
     assert_nothing_raised do
-      parse "nil", :exp
+      parse :exp, "nil", [:lit, nil]
     end
     assert_nothing_raised do
-      parse "false", :exp
+      parse :exp, "false", [:lit, false]
     end
     assert_nothing_raised do
-      parse "true", :exp
+      parse :exp, "true", [:lit, true]
     end
     assert_nothing_raised do
-      parse "1", :exp
+      parse :exp, "1", [:integer, 1]
     end
     assert_nothing_raised do
-      parse %Q{"kitties"}, :exp
+      parse :exp, %Q{"kitties"}, [:string, "kitties"]
     end
     assert_nothing_raised do
       # Rubinius::Debugger.start
-      parse "kitties()", :exp
+      parse :exp, "kitties()", [:prefixexp, [:functioncall, :kitties, []]]
     end
     assert_nothing_raised do
-      parse "(kitties())", :exp
+      parse :exp, "(kitties())", [:prefixexp, [:functioncall, :kitties, []]]
     end
     # assert_nothing_raised do
-    #   parse "1+1", :exp
+    #   parse :exp, "(((kitties()))", [:prefixexp, [:functioncall, :kitties, []]]
+    # end
+    # assert_nothing_raised do
+    #   parse "kitties(puppies(iguanas()))", :exp
+    # end
+    # assert_nothing_raised do
+    #   p = Lupin::Parser.new("1+1")
+    #   assert p.parse('exp')
+    #   assert p.result, [:+, 1, 1]
+    # end
+    # assert_nothing_raised do
+    #   parse "(1+1)", :exp
     # end
     # assert_nothing_raised do
     #   parse "1-1.0", :exp
@@ -58,8 +69,14 @@ class ExpTest < Test::Unit::TestCase
 
   def test_bad
     assert_raise RuntimeError do
-      parse "-", :exp
-      parse "*", :exp
+      raise
+      # parse "-", :exp
+      # parse "*", :exp
+    end
+    assert_raise RuntimeError do
+      raise
+      # Excessive? :-D
+      # parse "((((((((((((((((kitties())))))))))))))))", :exp
     end
   end
 end

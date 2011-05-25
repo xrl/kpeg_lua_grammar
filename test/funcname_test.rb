@@ -6,11 +6,11 @@ class FuncnameTest < Test::Unit::TestCase
 
   def test_funcnames
     assert_nothing_raised do
-      parse "asdf", :funcname
-      parse "____", :funcname
-      parse "_FUNKY", :funcname
-      parse "this.is:funky", :funcname
-      parse "_._._", :funcname
+      parse :funcname, "asdf"
+      parse :funcname, "____"
+      parse :funcname, "_FUNKY"
+      parse :funcname, "this.is:funky"
+      parse :funcname, "_._._"
     end
   end
 

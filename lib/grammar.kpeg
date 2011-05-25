@@ -13,37 +13,56 @@ chunk = (stat ";"?)* (laststat ";"?)?
 
 block = chunk
 
-stat = varlist "=" explist |
-      functioncall |
-      "do" block "end" |
-      "while" exp "do" block "end" |
-      "repeat" block "until" exp |
-      "if" exp "then" block ("elseif" exp "then" block)* ("else" block)? "end" |
-      "for" name "=" exp "," exp ("," exp)? "do" block "end" |
-      "for" namelist "in" explist "do" block "end" |
-      "function" funcname funcbody |
-      "local" "function" name funcbody |
-      "local" namelist ("=" explist)?
+stat = varlist "=" explist
+     | functioncall |
+       "do" block "end" |
+       "while" exp "do" block "end" |
+       "repeat" block "until" exp |
+       "if" exp "then" block ("elseif" exp "then" block)* ("else" block)? "end" |
+       "for" name "=" exp "," exp ("," exp)? "do" block "end" |
+       "for" namelist "in" explist "do" block "end" |
+       "function" funcname funcbody |
+       "local" "function" name funcbody |
+       "local" namelist ("=" explist)?
 
 laststat = "return" (explist)* | "break"
 
 funcname = name ("." name)* (":" name)?
-name = </[A-Za-z_][A-Za-z_0-9]*/> { text }
+name = </[A-Za-z_][A-Za-z_0-9]*/> { raise text }
 
 varlist = var (- "," - var)*
 var = name | prefixexp "[" exp "]" | prefixexp "." name
 
 namelist = name ("," name)*
 
-explist = (exp - "," -)* - exp
+# Sorry for the nested
+explist = ((exp - "," -)*:es - exp):e {
+  [:explist, (es.nil? || es.empty?) ? e : es << e]
+}
 # TODO: I don't like functioncall here. prefixexp's functioncall should suffice!
-exp = functioncall | prefixexp | function | tableconstructor | exp binop exp | unop exp | "nil" | "false" | "true" | number | string | "..."
+exp = "nil"         { [:lit, nil]      }
+    | "false"       { [:lit, false]    }
+    | "true"        { [:lit, true]     }
+    | number
+    | string:s      { s                }
+    | "..."         { [:lit, :varargs] }
+    | prefixexp:pe  { pe }
+    | function
+    | tableconstructor
+    | exp:e1 binop:op exp:e2 { [op,e1,e2] } 
+    | unop exp
 
-prefixexp = "(" exp ")" | functioncall | var
+prefixexp = "(" exp ")"
+          | functioncall:fc { [:prefixexp, fc] }
+          | var:v { [:prefixexp, v] }
 
-functioncall = prefixexp args | prefixexp ":" name args
+functioncall = "kitties()"  { [:functioncall, :kitties, []] }
+             | prefixexp args
+             | prefixexp ":" name args
 
-args = - "(" - (explist)? - ")" - | tableconstructor | string
+args = - "(" - ((explist)?):e - ")" - { [:args, e.nil? ? [] : e] }
+     | tableconstructor
+     | string
 
 function = "function" funcbody
 funcbody = "(" (parlist)? ")" block "end"
@@ -55,36 +74,57 @@ fieldlist = field (fieldsep field)* (fieldsep)?
 field = "[" exp "]" "=" exp | name "=" exp | exp
 fieldsep = "," | ";"
 
-binop = "+" | "-" | "*" | "/" | "^" | "%" | ".." | "<" | "<=" | ">" | ">=" | "==" | "~=" | "and" | "or"
+binop_exp = exp binop exp
+binop = "+"    { :"+" }
+      | "-"    { :"-" }
+      | "*"    { :"*" }
+      | "/"    { :"/" }
+      | "^"    { :"^" }
+      | "%"    { :"%" }
+      | ".."   { :".." }
+      | "<"    { :"<"  }
+      | "<="   { :"<=" }
+      | ">"    { :">"  }
+      | ">="   { :">=" }
+      | "=="   { :"==" }
+      | "~="   { :"~=" }
+      | "and"  { :and  }
+      | "or"   { :or   }
 
 unop = "-" | "not" | "#" 
 
 primitives = /\b/ ("nil" | "false" | "true") /\b/
 
 # Numbers
+# TODO: How to handle the exponents? Expand to ruby value?
 number = hex-literal | dec-literal
 hex-literal = "0x" /[A-Fa-f0-9]+/
-dec-literal = dec-literal-base dec-literal-exponent?
-dec-literal-base = /\d*\.\d+/ | /\d+\.?/
+dec-literal = dec-literal-base:base dec-literal-exponent?
+dec-literal-base = </\d*\.\d+/> { [:float, text.to_f] }
+                 | </\d+\.?/>   { [:integer, text.to_i] }
 dec-literal-exponent = /[Ee][+-]?\d+/
 
 # Strings
-string = sgl-string | dbl-string | long-string
-sgl-string = "'" </(\\.|[^\'\n])*/m> "'" {text}
-dbl-string = "\"" </(\\.|[^\"\n])*/m> "\"" {text}
+string = sgl-string:ss  { [:string, ss] }
+       | dbl-string:ds  { [:string, ds] }
+       | long-string:ls { [:string, ls] }
+sgl-string = "'" </(\\.|[^\'\n])*/m> "'" { text }
+dbl-string = "\"" </(\\.|[^\"\n])*/m> "\"" { text }
 long-string = long-string-start:e
               <(!long-string-end(e) .)*>
-              long-string-end(e)
-            {text}
+              long-string-end(e) { text }
 long-string-equals = <"="*> {text}
 long-string-start = "[" <long-string-equals> "[" {text}
 long-string-end(eqs) = "]" long-string-equals:e &{e.length == eqs.length} "]"
 
 # Whitespace/comments
-- = whitespace | comment
+- = whitespace
+  | comment
 whitespace = /[ \n\t]*/
-comment = "--" ( !long-string-start /[^\n]+/ ("\n" | eof)
-               | long-string)
+one-line-comment-content = </[^\n]+/> { text }
+one-line-comment = !long-string-start one-line-comment-content:c ("\n" | eof) { c }
+multi-line-comment = long-string:ls { ls }
+comment = "--" (one-line-comment | multi-line-comment):content { [:comment, content] }
 
 # Top-level
 root = chunk:e {@ast = e}
