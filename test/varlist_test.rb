@@ -6,19 +6,19 @@ class VarlistTest < Test::Unit::TestCase
 
   def test_varlists
     assert_nothing_raised do
-      parse "var1", :varlist
+      parse :varlist, "var1", [:varlist,[[:var,:var1]]]
     end
     assert_nothing_raised do
-      parse "var1,var2", :varlist
+      parse :varlist, "var1,var2", [:varlist,[[:var,:var1],[:var,:var2]]]
     end
     assert_nothing_raised do
-      parse "var1, var2", :varlist
+      parse "var1, var2", :varlist, [:varlist, [[:var,:var1],[:var,:var2]]]
     end
   end
 
   def test_bad
     assert_raise RuntimeError do
-      parse "some_method var2", :varlist
+      parse :varlist, "some_method var2", nil
     end
   end
 end

@@ -27,11 +27,13 @@ stat = varlist "=" explist
 
 laststat = "return" (explist)* | "break"
 
-funcname = name ("." name)* (":" name)?
-name = </[A-Za-z_][A-Za-z_0-9]*/> { raise text }
+funcname = <name ("." name)* (":" name)?> { [:funcname,text.to_sym]}
+name = </[A-Za-z_][A-Za-z_0-9]*/> { text }
 
-varlist = var (- "," - var)*
-var = name | prefixexp "[" exp "]" | prefixexp "." name
+varlist = var:v (- "," - var)*:vs { [:varlist, (vs.nil? || vs.empty?) ? [v] : vs.reverse << v]}
+var = name:n { [:var,n.to_sym] }
+    | prefixexp "[" exp "]"
+    | prefixexp "." name
 
 namelist = name ("," name)*
 
@@ -98,10 +100,10 @@ primitives = /\b/ ("nil" | "false" | "true") /\b/
 # Numbers
 # TODO: How to handle the exponents? Expand to ruby value?
 number = hex-literal | dec-literal
-hex-literal = "0x" /[A-Fa-f0-9]+/
-dec-literal = dec-literal-base:base dec-literal-exponent?
-dec-literal-base = </\d*\.\d+/> { [:float, text.to_f] }
-                 | </\d+\.?/>   { [:integer, text.to_i] }
+hex-literal = "0x" </[A-Fa-f0-9]+/> {[:number, text.hex]}
+dec-literal = <dec-literal-base:base dec-literal-exponent?> {[:number, text.to_f]}
+dec-literal-base = /\d*\.\d+/
+                 | /\d+\.?/
 dec-literal-exponent = /[Ee][+-]?\d+/
 
 # Strings
