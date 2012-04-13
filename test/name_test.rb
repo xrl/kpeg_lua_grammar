@@ -6,29 +6,29 @@ class NameTest < Test::Unit::TestCase
   
   def test_names
     assert_nothing_raised do
-      parse "someName", :name
-      parse "HITHERE", :name
-      parse "_Leading", :name
-      parse "_LEADING", :name
-      parse "Has3Numbers94", :name
+      parse :name, "someName", [:name,:someName]
+      parse :name, "HITHERE", [:name, :HITHERE]
+      parse :name, "_Leading", [:name, :_Leading]
+      parse :name, "_LEADING", [:name, :_LEADING]
+      parse :name, "Has3Numbers94", [:name, :Has3Numbers94]
     end
   end
   
   def test_bad_names
     assert_raise RuntimeError do
-      parse "0", :name
+      parse :name, "0", nil
     end
     assert_raise RuntimeError do
-      parse "$", :name
+      parse :name, "$", nil
     end
     assert_raise RuntimeError do
-      parse "0badname", :name
+      parse :name, "0badname", nil
     end
     assert_raise RuntimeError do
-      parse "no spaces allowed", :name
+      parse :name, "no spaces allowed", nil
     end
     assert_raise RuntimeError do
-      parse "   leading_spaces_bad", :name
+      parse :name, "   leading_spaces_bad", nil
     end
   end
 end

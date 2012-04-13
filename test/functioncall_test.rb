@@ -6,28 +6,25 @@ class FunctioncallTest < Test::Unit::TestCase
 
   def test_parse
     assert_nothing_raised do
-      parse "invokeme()", :functioncall
+      parse :functioncall, "invokeme()", [:functioncall, :invokeme, []]
     end
     assert_nothing_raised do
-      parse "so_true(false)", :functioncall
+      parse :functioncall, "so_true(false)", [:functioncall, :so_true,[false]]
     end
     assert_nothing_raised do
-      parse "set_bank_balance(nil)", :functioncall
+      parse :functioncall, "set_bank_balance(nil)", [:functioncall, :set_bank_balance, [nil]]
     end
     assert_nothing_raised do
-      parse "evaluate_expression(100)", :functioncall
+      parse :functioncall, "evaluate_expression(100)", [:functioncall, :evalute_expression, [100]]
     end
     assert_nothing_raised do
-      parse "evaluate_expression(\"yessir\")", :functioncall
+      parse :functioncall, "evaluate_expression(\"yessir\")", [:functioncall, :evalute_expression, ["yessir"]]
     end
     assert_nothing_raised do
-      parse "evaluate_expression(...)", :functioncall
+      parse :functioncall, "evaluate_expression(...)", [:functioncall,:evaluate_expression,[:ellipsis]]
     end
     assert_nothing_raised do
-      parse "evaluate_expression(somevar)", :functioncall
-    end
-    assert_nothing_raised do
-      # parse "evaluate_expression(somevar())", :functioncall
+      parse :functioncall, "evaluate_expression(somevar)", [:functioncall,:evaluate_expression,[:var,:somevar]]
     end
   end
 

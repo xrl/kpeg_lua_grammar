@@ -15,7 +15,7 @@ class ExpTest < Test::Unit::TestCase
       parse :exp, "true", [:lit, true]
     end
     assert_nothing_raised do
-      parse :exp, "1", [:integer, 1]
+      parse :exp, "1", [:number, 1.0]
     end
     assert_nothing_raised do
       parse :exp, %Q{"kitties"}, [:string, "kitties"]
