@@ -39,8 +39,8 @@ namelist = name ("," name)*
 
 # Sorry for the nested
 explist = ((exp - "," -)*:es - exp):e {
-  [:explist, (es.nil? || es.empty?) ? e : es << e]
-}
+                [:explist, (es.nil? || es.empty?) ? e : es << e]
+          }
 # TODO: I don't like functioncall here. prefixexp's functioncall should suffice!
 exp = "nil"         { [:lit, nil]      }
     | "false"       { [:lit, false]    }
@@ -54,9 +54,9 @@ exp = "nil"         { [:lit, nil]      }
     | exp:e1 binop:op exp:e2 { [op,e1,e2] } 
     | unop exp
 
-prefixexp = "(" exp:e ")" { [:prefixexp, e] }
-          | functioncall:fc { [:prefixexp, fc] }
-          | var:v { [:prefixexp, v] }
+prefixexp = "(" exp:e ")"   { e }
+          | functioncall:fc { fc }
+          | var:v           { v }
 
 functioncall = prefixexp args
              | prefixexp ":" name args
