@@ -21,7 +21,7 @@ class ArgsTest < Test::Unit::TestCase
 
   def test_bad
     assert_raise Test::Unit::AssertionFailedError do
-      parse :args, "(nil,)", :whatever
+      parse :args, "(nil,)", [:args, [:explist, [[:lit,nil],[:lit,nil]] ]]
     end
     assert_raise Test::Unit::AssertionFailedError do
       parse :args, "(,nil,)", :whatever

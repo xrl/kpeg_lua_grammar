@@ -6,6 +6,9 @@ class FunctioncallTest < Test::Unit::TestCase
 
   def test_parse
     assert_nothing_raised do
+      parse :functioncall, "kitties()", [:functioncall, :kitties, []]
+    end
+    assert_nothing_raised do
       parse :functioncall, "invokeme()", [:functioncall, :invokeme, []]
     end
     assert_nothing_raised do
