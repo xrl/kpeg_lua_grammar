@@ -1,5 +1,4 @@
 *.swp
-Gemfile.lock
 gems/
 *.rbc
 .bundle/
