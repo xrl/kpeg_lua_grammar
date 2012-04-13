@@ -54,12 +54,11 @@ exp = "nil"         { [:lit, nil]      }
     | exp:e1 binop:op exp:e2 { [op,e1,e2] } 
     | unop exp
 
-prefixexp = "(" exp ")"
+prefixexp = "(" exp:e ")" { [:prefixexp, e] }
           | functioncall:fc { [:prefixexp, fc] }
           | var:v { [:prefixexp, v] }
 
-functioncall = "kitties()"  { [:functioncall, :kitties, []] }
-             | prefixexp args
+functioncall = prefixexp args
              | prefixexp ":" name args
 
 args = - "(" - ((explist)?):e - ")" - { [:args, e.nil? ? [] : e] }
