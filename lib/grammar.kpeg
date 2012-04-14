@@ -1,6 +1,5 @@
 %% name = Lupin::Parser
 %% {
-  require 'rubinius/debugger'
   require 'ast'
   attr_accessor :ast
 }
@@ -14,54 +13,55 @@ chunk = (stat ";"?)* (laststat ";"?)?
 block = chunk
 
 stat = varlist "=" explist
-     | functioncall |
-       "do" block "end" |
-       "while" exp "do" block "end" |
-       "repeat" block "until" exp |
-       "if" exp "then" block ("elseif" exp "then" block)* ("else" block)? "end" |
-       "for" name "=" exp "," exp ("," exp)? "do" block "end" |
-       "for" namelist "in" explist "do" block "end" |
-       "function" funcname funcbody |
-       "local" "function" name funcbody |
-       "local" namelist ("=" explist)?
+     | functioncall
+     | "do" block "end"
+     | "while" exp "do" block "end"
+     | "repeat" block "until" exp
+     | "if" exp "then" block ("elseif" exp "then" block)* ("else" block)? "end"
+     | "for" name "=" exp "," exp ("," exp)? "do" block "end"
+     | "for" namelist "in" explist "do" block "end"
+     | "function" funcname funcbody
+     | "local" "function" name funcbody
+     | "local" namelist ("=" explist)?
 
 laststat = "return" (explist)* | "break"
 
 funcname = <name ("." name)* (":" name)?> { [:funcname,text.to_sym]}
-name = </[A-Za-z_][A-Za-z_0-9]*/> { text }
+name = </[A-Za-z_][A-Za-z_0-9]*/> { text.to_sym }
 
-varlist = var:v (- "," - var)*:vs { [:varlist, (vs.nil? || vs.empty?) ? [v] : vs.reverse << v]}
-var = name:n { [:var,n.to_sym] }
-    | prefixexp "[" exp "]"
-    | prefixexp "." name
+varlist = var:v (- "," - var)*:vs { [:varlist, (vs.nil? || vs.empty?) ? [v] : vs.unshift(v)]}
+var = name:n                    { [:name,   n]        }
+    | prefixexp:p "[" exp:e "]" { [:lookup, p, e]     }
+    | prefixexp:p "." name:n    { [:method, n]        }
 
 namelist = name ("," name)*
 
 # Sorry for the nested
 explist = ((exp - "," -)*:es - exp):e {
-                [:explist, (es.nil? || es.empty?) ? e : es << e]
+                (es.nil? || es.empty?) ? [e] : es << e
           }
 # TODO: I don't like functioncall here. prefixexp's functioncall should suffice!
-exp = "nil"         { [:lit, nil]      }
-    | "false"       { [:lit, false]    }
-    | "true"        { [:lit, true]     }
-    | number
-    | string:s      { s                }
-    | "..."         { [:lit, :varargs] }
+exp = "nil"         { [:lit, nil]   }
+    | "false"       { [:lit, false] }
+    | "true"        { [:lit, true]  }
+    | number:n      { n             }
+    | string:s      { s             }
+    | "..."         { [:varargs]    }
     | prefixexp:pe  { pe }
     | function
     | tableconstructor
     | exp:e1 binop:op exp:e2 { [op,e1,e2] } 
     | unop exp
 
-prefixexp = "(" exp:e ")"   { e }
-          | functioncall:fc { fc }
+prefixexp = functioncall:fc { fc }
           | var:v           { v }
+          | "(" exp:e ")"   { e }
 
-functioncall = prefixexp args
-             | prefixexp ":" name args
 
-args = - "(" - ((explist)?):e - ")" - { [:args, e.nil? ? [] : e] }
+functioncall = prefixexp:pe args:a            { [:functioncall, pe, a]}
+             | prefixexp:pe ":" name:n args:a { [:functioncall, pe, n, a] }
+
+args = - "(" - ((explist)?):e - ")" - { e.nil? ? [] : e }
      | tableconstructor
      | string
 
@@ -98,9 +98,10 @@ primitives = /\b/ ("nil" | "false" | "true") /\b/
 
 # Numbers
 # TODO: How to handle the exponents? Expand to ruby value?
-number = hex-literal | dec-literal
-hex-literal = "0x" </[A-Fa-f0-9]+/> {[:number, text.hex]}
-dec-literal = <dec-literal-base:base dec-literal-exponent?> {[:number, text.to_f]}
+number = hex-literal:n { [:number,n] }
+       | dec-literal:n { [:number,n] }
+hex-literal = "0x" </[A-Fa-f0-9]+/>                         { text.hex  }
+dec-literal = <dec-literal-base:base dec-literal-exponent?> { text.to_f }
 dec-literal-base = /\d*\.\d+/
                  | /\d+\.?/
 dec-literal-exponent = /[Ee][+-]?\d+/

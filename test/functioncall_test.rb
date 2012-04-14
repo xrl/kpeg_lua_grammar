@@ -1,39 +1,18 @@
-require "test/unit"
-require './test/helper_methods'
+require "minitest/autorun"
+require "test/helper_methods"
 
-class FunctioncallTest < Test::Unit::TestCase
-  include TestHelperMethods
-
+class FunctioncallTest < MiniTest::Unit::TestCase
   def test_parse
-    assert_nothing_raised do
-      parse :functioncall, "kitties()", [:functioncall, :kitties, []]
-    end
-    assert_nothing_raised do
-      parse :functioncall, "invokeme()", [:functioncall, :invokeme, []]
-    end
-    assert_nothing_raised do
-      parse :functioncall, "so_true(false)", [:functioncall, :so_true,[false]]
-    end
-    assert_nothing_raised do
-      parse :functioncall, "set_bank_balance(nil)", [:functioncall, :set_bank_balance, [nil]]
-    end
-    assert_nothing_raised do
-      parse :functioncall, "evaluate_expression(100)", [:functioncall, :evalute_expression, [100]]
-    end
-    assert_nothing_raised do
-      parse :functioncall, "evaluate_expression(\"yessir\")", [:functioncall, :evalute_expression, ["yessir"]]
-    end
-    assert_nothing_raised do
-      parse :functioncall, "evaluate_expression(...)", [:functioncall,:evaluate_expression,[:ellipsis]]
-    end
-    assert_nothing_raised do
-      parse :functioncall, "evaluate_expression(somevar)", [:functioncall,:evaluate_expression,[:var,:somevar]]
-    end
+    parse :functioncall, "kitties()", [:functioncall, [:name, :kitties], []]
+    parse :functioncall, "invokeme()", [:functioncall, [:name, :invokeme], []]
+    parse :functioncall, "so_true(false)", [:functioncall, [:name, :so_true], [[:lit,false]]]
+    parse :functioncall, "set_bank_balance(nil)", [:functioncall, [:name, :set_bank_balance], [[:lit,nil]]]
+    parse :functioncall, "evaluate_expression(100)", [:functioncall, [:name, :evaluate_expression], [[:number,100]]]
+    parse :functioncall, "evaluate_expression(\"yessir\")", [:functioncall, [:name, :evaluate_expression], [[:string,"yessir"]]]
+    parse :functioncall, "evaluate_expression(...)", [:functioncall, [:name, :evaluate_expression], [[:varargs]]]
+    parse :functioncall, "evaluate_expression(somevar)", [:functioncall, [:name, :evaluate_expression], [[:name,:somevar]]]
   end
 
   def test_bad
-    assert_raise RuntimeError do
-      raise RuntimeError
-    end
   end
 end

@@ -1,4 +1,13 @@
 GIT
+  remote: git://github.com/cldwalker/debugger.git
+  revision: c9b422b520e54cebbfd12da0ad12fca6380f10c7
+  specs:
+    debugger (1.1.1)
+      columnize (>= 0.3.1)
+      debugger-linecache (~> 1.1)
+      debugger-ruby_core_source (~> 1.1)
+
+GIT
   remote: https://github.com/evanphx/kpeg.git
   revision: 8adf9b41dc1270b7e2b41bfe99cf7084279a3dfc
   specs:
@@ -7,7 +16,13 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
+    awesome_print (1.0.2)
+    columnize (0.3.6)
+    debugger-linecache (1.1.1)
+      debugger-ruby_core_source (>= 1.1.1)
+    debugger-ruby_core_source (1.1.1)
     diff-lcs (1.1.2)
+    minitest (2.12.1)
     rake (0.9.2.2)
     rspec (2.6.0)
       rspec-core (~> 2.6.0)
@@ -22,7 +37,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
   bundler
+  debugger!
   kpeg!
+  minitest
   rake (= 0.9.2.2)
   rspec

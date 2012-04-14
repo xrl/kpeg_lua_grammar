@@ -18,5 +18,7 @@ task :clean do
 end
 
 Rake::TestTask.new(:test => ["lib/grammar.kpeg.rb"]) do |t|
-  t.test_files = FileList["test/*_test.rb"]
+  t.test_files = FileList['test/*_test.rb']
+  # t.pattern = "test/exp_test*.rb"
+  t.verbose = true
 end

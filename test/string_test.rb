@@ -1,45 +1,30 @@
-require "test/unit"
-require './test/helper_methods'
+require "minitest/unit"
+require "test/helper_methods"
 
-class StringTest < Test::Unit::TestCase
-  include TestHelperMethods
-  
+class StringTest < MiniTest::Unit::TestCase
   def test_strings
-    assert_nothing_raised do
-      parse :string, %Q{'foobar'}, [:string, "foobar"]
-      parse :string, %Q{'foo\\'bar'}, [:string, %Q{foo\\'bar}]
-      parse :string, %Q{'foo\\\nbar'}, [:string, %Q{foo\\\nbar}]
-      parse :string, %Q{'foo"bar'}, [:string, %Q{foo\"bar}]
-    end
+    parse :string, %Q{'foobar'}, [:string, "foobar"]
+    parse :string, %Q{'foo\\'bar'}, [:string, %Q{foo\\'bar}]
+    parse :string, %Q{'foo\\\nbar'}, [:string, %Q{foo\\\nbar}]
+    parse :string, %Q{'foo"bar'}, [:string, %Q{foo\"bar}]
     
-    assert_nothing_raised do
-      parse :string, %Q{"foobar"}, [:string,%Q{foobar}]
-      parse :string, %Q{"foo\\\"bar"}, [:string,%Q{foo\\\"bar}]
-      parse :string, %Q{"foo\\\nbar"}, [:string,%Q{foo\\\nbar}]
-      parse :string, %Q{"foo'bar"}, [:string,%Q{foo'bar}]
-    end
+    parse :string, %Q{"foobar"}, [:string,%Q{foobar}]
+    parse :string, %Q{"foo\\\"bar"}, [:string,%Q{foo\\\"bar}]
+    parse :string, %Q{"foo\\\nbar"}, [:string,%Q{foo\\\nbar}]
+    parse :string, %Q{"foo'bar"}, [:string,%Q{foo'bar}]
     
-    assert_nothing_raised do
-      parse :string, "[[foo]]", [:string,%Q{foo}]
-      parse :string, "[=[foo]]bar]=]", [:string,%Q{foo]]bar}]
-      parse :string, "[[foo'bar\"\nbaz]]", [:string,%Q{foo'bar\"\nbaz}]
-    end
+    parse :string, "[[foo]]", [:string,%Q{foo}]
+    parse :string, "[=[foo]]bar]=]", [:string,%Q{foo]]bar}]
+    parse :string, "[[foo'bar\"\nbaz]]", [:string,%Q{foo'bar\"\nbaz}]
   end
   
   def test_bad_strings
-    assert_raise Test::Unit::AssertionFailedError do
-      parse :string, "'foo bar", [:string, %Q{'foo bar}]
-      parse :string, "'foo\nbar'", [:string, %Q{'foo\nbar'}]
-    end
-    
-    assert_raise Test::Unit::AssertionFailedError do
-      parse :string, "\"foo bar", [:string, %Q{}]
-      parse :string, "\"foo\nbar\"", [:string,%Q{}]
-    end
-    
-    assert_raise Test::Unit::AssertionFailedError do
-      parse :string, "[[foo bar", [:string, %Q{}]
-      parse :string, "[=[foo]]", [:string, %Q{}]
-    end
+    no_parse :string, "'foo bar"
+    no_parse :string, "'foo\nbar'"
+    no_parse :string, "\"foo bar"
+    no_parse :string, "\"foo\nbar\""
+
+    no_parse :string, "[[foo bar"
+    no_parse :string, "[=[foo]]"
   end
 end
