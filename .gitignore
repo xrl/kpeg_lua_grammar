@@ -3,3 +3,4 @@ gems/
 *.rbc
 .bundle/
 *.kpeg.rb
+.rbx/
