@@ -11,18 +11,15 @@ class ExpTest < MiniTest::Unit::TestCase
     parse :exp, "k()", [:functioncall, [:name,:k], []]
     parse :exp, "(kitties())", [:functioncall, [:name, :kitties], []]
     parse :exp, "((kitties()))", [:functioncall, [:name, :kitties], []]
-    # parse :exp, "kitties(puppies(iguanas()))"
-    #    p = Lupin::Parser.new("1+1")
-    #    assert p.parse('exp')
-    #    assert p.result, [:+, 1, 1]
-    #    parse "(1+1)", :exp
-    #    parse "1-1.0", :exp
-    #    parse "1/10", :exp
-    #    parse "1*100e100", :exp
-    #    parse "...", :exp # How is this used? :-D
-    #    parse "puppies(1+1,\"woof\")", :exp
-    #    parse "some_var", :exp
-    #    parse "(funky_func(1+1))", :exp
-    #    parse "+++"
+    parse :exp, "kitties(puppies(iguanas()))", [:functioncall, [:name, :kitties], [[:functioncall, [:name, :puppies], [[:functioncall, [:name, :iguanas], []]]]]]
+    parse :exp, "some_var", [:name,:some_var]
+    parse :exp, "1/10", []
+    parse :exp, "1-1.0", []
+    parse :exp, "(1+1)", :whut
+    parse :exp, "1*100e100", []
+    parse :exp, "...", :varargs # How is this used? :-D
+    parse :exp, "puppies(1+1,\"woof\")", []
+    parse :exp, "(funky_func(1+1))", []
+    parse :exp, "+++", [] # Is this valid?
   end
 end
