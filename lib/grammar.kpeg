@@ -47,6 +47,7 @@ exp = "nil"         { [:lit, nil]   }
     | number:n      { n             }
     | string:s      { s             }
     | "..."         { [:varargs]    }
+    | functioncall:fc { fc }
     | prefixexp:pe  { pe }
     | function
     | tableconstructor
@@ -61,7 +62,7 @@ prefixexp = functioncall:fc { fc }
 functioncall = prefixexp:pe args:a            { [:functioncall, pe, a]}
              | prefixexp:pe ":" name:n args:a { [:functioncall, pe, n, a] }
 
-args = - "(" - ((explist)?):e - ")" - { e.nil? ? [] : e }
+args = (-)? "(" (-)? ((explist)?):e (-)? ")" - { e.nil? ? [] : e }
      | tableconstructor
      | string
 
